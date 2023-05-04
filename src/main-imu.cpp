@@ -1,18 +1,5 @@
 #include <Arduino.h>
-#include "KalmanFilter.h"
 #include <iostream>
-
-#include "SensorFusion.h"     // Mahony filter
-// #include "can_comm.h"         // CAN communication
-
-KalmanFilter kf;              // EKF object
-Eigen::MatrixXf x(NS, 1);     // State vector
-Eigen::MatrixXf u(NC, 1);     // Control vector
-Eigen::MatrixXf z(NM, 1);     // Measurement vector
-
-SF mahony;                    // Mahony filter object
-float dt;                     // This is used for the Mahony filter, but what is it?
-float roll, pitch, yaw;       // Euler angles
 
 uint8_t datagram_type = 0x93; // Rate, accel, and inclinometer datagram type (See Table 5.21 in STIM300 datasheet)
 const int datagram_size = 38; // Size of the datagram
@@ -48,6 +35,7 @@ void readDatagram()
     {
         if (Serial1.available())
         {
+            Serial.println("WE ARE GOOD!!");
             in_byte = Serial1.read();
 
             if (in_byte == datagram_type)
@@ -95,104 +83,36 @@ void parseDatagram()
     acc_z = acc_z * g;
 }
 
-void readSensors()
-{
-    Serial.println("AAAAAA");
-    readDatagram();
-    Serial.println("BBBBBB");
-    // parseDatagram();
-}
-
-void mahony_filter()
-{
-
-  // Mahony Filter: Obtain orientation
-  dt = mahony.deltatUpdate();
-  mahony.MahonyUpdate(gyr_x, gyr_y, gyr_z, acc_x, acc_y, acc_z, dt);
-  pitch = mahony.getPitchRadians(); roll = mahony.getRollRadians(); yaw = mahony.getYawRadians();
-}
-
-////////////////////////////////////////////////////////////////////
-//                           Printing                             //
-////////////////////////////////////////////////////////////////////
-void print_state(Eigen::MatrixXf x)
-{
-  // print out the state on the serial monitor
-  Serial.print("| ");
-  Serial.print("x = ");
-  Serial.print(x(0, 0));
-  Serial.print(" | ");
-  Serial.print("y = ");
-  Serial.print(x(1, 0));
-  Serial.print(" | ");
-  Serial.print("z = ");
-  Serial.print(x(2, 0));
-  Serial.print(" | ");
-  Serial.print("phi = ");
-  Serial.print(x(3, 0));
-  Serial.print(" | ");
-  Serial.print("theta = ");
-  Serial.print(x(4, 0));
-  Serial.print(" | ");
-  Serial.print("psi = ");
-  Serial.print(x(5, 0));
-  Serial.print(" | ");
-  Serial.print("vx = ");
-  Serial.print(x(6, 0));
-  Serial.print(" | ");
-  Serial.print("vy = ");
-  Serial.print(x(7, 0));
-  Serial.print(" | ");
-  Serial.print("vz = ");
-  Serial.print(x(8, 0));
-  Serial.print(" | ");
-  Serial.print("wx = ");
-  Serial.print(x(9, 0));
-  Serial.print(" | ");
-  Serial.print("wy = ");
-  Serial.print(x(10, 0));
-  Serial.print(" | ");
-  Serial.print("wz = ");
-  Serial.print(x(11, 0));
-  Serial.println(" | ");
-
-}
-
 
 void setup()
 {
 
-  Serial.begin(115200);
-  Serial1.begin(921600);  // Serial port for IMU
+    Serial.begin(115200);
+    // Loop until Serial is connected
+    while (!Serial)
+    {
+        ;
+    }
 
-  u <<    113.1111,   // m1 [N]
-          113.1111,   // m2 [N]
-          0.0291,     // main wing [rad]
-          0.0,        // rudder wing [rad]
-          -0.0607;    // elevator wing [rad]
+    Serial1.begin(921600);  // Serial port for IMU
 
-  z << -0.5, 0.0, 0.0, 0.0, 6.0, 0.0, 0.0, 0.0, 0.0, 0.0;
+    // Loop until Serial1 is connected
+    while (!Serial1)
+    {
+        ;
+    }
+    Serial.println("Serial1 connected");
 
-  x = kf.update(u, z);
-
-//   // Initialize can bus
-//   canInit();
+    // Add a 5 second delay
+    delay(5000);
 
 }
 
 void loop()
 {
-  Serial.println("00000");
-  readSensors();  // Read sensors: Obtain linear acceleration, angular velocity, (TODO: inclination)
-
-  // mahony_filter();  // Mahony filter: Obtain roll, pitch, yaw
-  // // z << z, roll, pitch, yaw, vx, vy, vz, wx, wy, wz;
-  // z << -0.5, roll, pitch, yaw, 6.0, 0.0, 0.0, gyr_x, gyr_y, gyr_z;
-  // x = kf.update(u, z);  // EKF
-
-  // print_state(x);
-
-//   send_one();
+    // Serial.println("We are good to go!");
+    readDatagram();
+    parseDatagram();
 
 }
 

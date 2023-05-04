@@ -13,7 +13,7 @@
 // {
 //   delay(1000);
 //   myCan1.begin();
-//   myCan1.setBaudRate(125000);
+//   myCan1.setBaudRate(1000000);
 
 // }
 
