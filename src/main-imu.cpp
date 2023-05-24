@@ -33,6 +33,7 @@ void readDatagram()
 
     while (true)
     {
+        Serial.println("NO");
         if (Serial1.available())
         {
             Serial.println("WE ARE GOOD!!");
@@ -112,7 +113,7 @@ void loop()
 {
     // Serial.println("We are good to go!");
     readDatagram();
-    parseDatagram();
+    // parseDatagram();
 
 }
 
