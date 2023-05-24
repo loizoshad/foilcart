@@ -4,16 +4,26 @@
 
 #include "SensorFusion.h"     // Mahony filter
 // #include "can_comm.h"         // CAN communication
+#include <Wire.h>
+#include <SparkFun_u-blox_GNSS_Arduino_Library.h>
 
+
+// EKF
 KalmanFilter kf;              // EKF object
 Eigen::MatrixXf x(NS, 1);     // State vector
 Eigen::MatrixXf u(NC, 1);     // Control vector
 Eigen::MatrixXf z(NM, 1);     // Measurement vector
-
+// GNSS
+SFE_UBLOX_GNSS myGNSS;        // GNSS object
+long ground_speed = 0;        // Ground speed in mm/s
+float groundSpeed = 0;        // Ground speed in m/s
+// Mahony filter
 SF mahony;                    // Mahony filter object
 float dt;                     // This is used for the Mahony filter, but what is it?
-float roll, pitch, yaw;       // Euler angles
-
+float roll = 0.0;
+float pitch = 0.0;
+float yaw = 0.0;
+// IMU
 uint8_t datagram_type = 0x93; // Rate, accel, and inclinometer datagram type (See Table 5.21 in STIM300 datasheet)
 const int datagram_size = 38; // Size of the datagram
 uint8_t in_byte = 0;
@@ -21,6 +31,19 @@ int datagram_size_count = 0;
 bool new_datagram = false;
 uint8_t datagram_raw[datagram_size]; // Datagram container array
 
+
+
+// Global variables
+float *fore_alt = new float(0.0);
+float *aft_alt = new float(0.0);
+float *wing_angle = new float(0.0);
+float *rudder_angle = new float(0.0);
+float *elevator_angle = new float(0.0);
+float *throttle = new float(0.0);
+
+double vel_x = 0.0;
+double vel_y = 0.0;
+double vel_z = 0.0;
 double acc_x = 0.0;
 double acc_y = 0.0;
 double acc_z = 0.0;
@@ -33,6 +56,22 @@ double inc_z = 0.0;
 double g = 9.80665;
 double pi = 3.14159265359;
 
+
+////////////////////////////////////////////////////////////////////
+//                         Initialization                         //
+////////////////////////////////////////////////////////////////////
+void initGNSS()
+{
+  Wire.begin();
+
+  if (myGNSS.begin() == false)
+  {
+    Serial.println(F("u-blox GNSS not detected at default I2C address. Please check wiring. Freezing."));
+    while (1);
+  }
+
+  myGNSS.setI2COutput(COM_TYPE_UBX | COM_TYPE_NMEA); //Set the I2C port to output both NMEA and UBX messages
+}
 
 ////////////////////////////////////////////////////////////////////
 //                            Sensors                             //
@@ -95,15 +134,13 @@ void parseDatagram()
     acc_z = acc_z * g;
 }
 
-void readSensors()
+void readIMU()
 {
-    Serial.println("AAAAAA");
     readDatagram();
-    Serial.println("BBBBBB");
-    // parseDatagram();
+    parseDatagram();
 }
 
-void mahony_filter()
+void mahonyFilter()
 {
 
   // Mahony Filter: Obtain orientation
@@ -111,6 +148,24 @@ void mahony_filter()
   mahony.MahonyUpdate(gyr_x, gyr_y, gyr_z, acc_x, acc_y, acc_z, dt);
   pitch = mahony.getPitchRadians(); roll = mahony.getRollRadians(); yaw = mahony.getYawRadians();
 }
+
+void readGPS()
+{
+  ground_speed = myGNSS.getGroundSpeed();                   // Ground speed in mm/s
+  groundSpeed = static_cast<float>(ground_speed) / 1000.0;  // Convert to m/s
+
+  // We assume that vy = 0.0, vz = 0.0, vx = groundSpeed (Adjust accordingly to your needs)
+  vel_x = groundSpeed;
+
+}
+
+void readSensors()
+{
+    readIMU();        // angular velocity, linear acceleration, and inclination
+    mahonyFilter();   // orientation
+    readGPS();        // Ground speed, position(Latitude, Longitude)
+}
+
 
 ////////////////////////////////////////////////////////////////////
 //                           Printing                             //
@@ -161,9 +216,11 @@ void print_state(Eigen::MatrixXf x)
 
 void setup()
 {
-
-  Serial.begin(115200);
+  delay(1000);
+  Serial.begin(115200);   // Serial port for debugging
   Serial1.begin(921600);  // Serial port for IMU
+  initGNSS();            // Setup GNSS
+  // init_can();             // Setup CAN    // From the can_comm.h library
 
   u <<    113.1111,   // m1 [N]
           113.1111,   // m2 [N]
@@ -171,28 +228,42 @@ void setup()
           0.0,        // rudder wing [rad]
           -0.0607;    // elevator wing [rad]
 
-  z << -0.5, 0.0, 0.0, 0.0, 6.0, 0.0, 0.0, 0.0, 0.0, 0.0;
+  z << -0.5,    // altitude [m]
+        0.0,    // roll [rad]
+        0.0,    // pitch [rad]
+        0.0,    // yaw [rad]
+        6.0,    // vx [m/s]
+        0.0,    // vy [m/s]
+        0.0,    // vz [m/s]
+        0.0,    // wx [rad/s]
+        0.0,    // wy [rad/s]
+        0.0;    // wz [rad/s]
 
   x = kf.update(u, z);
-
-//   // Initialize can bus
-//   canInit();
 
 }
 
 void loop()
 {
-  Serial.println("00000");
-  readSensors();  // Read sensors: Obtain linear acceleration, angular velocity, (TODO: inclination)
+  // read_can(fore_alt, aft_alt, wing_angle, rudder_angle, elevator_angle, throttle);
 
-  // mahony_filter();  // Mahony filter: Obtain roll, pitch, yaw
-  // // z << z, roll, pitch, yaw, vx, vy, vz, wx, wy, wz;
-  // z << -0.5, roll, pitch, yaw, 6.0, 0.0, 0.0, gyr_x, gyr_y, gyr_z;
-  // x = kf.update(u, z);  // EKF
+  readSensors();
 
-  // print_state(x);
+  z << -0.5,    // altitude [m]
+        roll,   // roll [rad]
+        pitch,  // pitch [rad]
+        yaw,    // yaw [rad]
+        vel_x,  // vx [m/s]
+        vel_y,  // vy [m/s]
+        vel_z,  // vz [m/s]
+        gyr_x,  // wx [rad/s]
+        gyr_y,  // wy [rad/s]
+        gyr_z;  // wz [rad/s]
 
-//   send_one();
+  x = kf.update(u, z);  // EKF
+
+  print_state(x);
+
 
 }
 

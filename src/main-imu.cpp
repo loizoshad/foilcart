@@ -33,10 +33,9 @@ void readDatagram()
 
     while (true)
     {
-        Serial.println("NO");
         if (Serial1.available())
         {
-            Serial.println("WE ARE GOOD!!");
+            // Serial.println("WE ARE GOOD!!");
             in_byte = Serial1.read();
 
             if (in_byte == datagram_type)
@@ -82,6 +81,29 @@ void parseDatagram()
     acc_x = acc_x * g;
     acc_y = acc_y * g;
     acc_z = acc_z * g;
+
+
+    Serial.print("Gyro: ");
+    Serial.print(gyr_x);
+    Serial.print(", ");
+    Serial.print(gyr_y);
+    Serial.print(", ");
+    Serial.println(gyr_z);
+    Serial.print("Accel: ");
+    Serial.print(acc_x);
+    Serial.print(", ");
+    Serial.print(acc_y);
+    Serial.print(", ");
+    Serial.println(acc_z);
+    Serial.print("Inclinometer: ");
+    Serial.print(inc_x);
+    Serial.print(", ");
+    Serial.print(inc_y);
+    Serial.print(", ");
+    Serial.println(inc_z);
+    Serial.println();
+
+
 }
 
 
@@ -113,8 +135,9 @@ void loop()
 {
     // Serial.println("We are good to go!");
     readDatagram();
-    // parseDatagram();
+    parseDatagram();
 
+    delay(100);
 }
 
 

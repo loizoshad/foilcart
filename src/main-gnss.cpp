@@ -1,12 +1,11 @@
-#include <Wire.h> //Needed for I2C to GNSS
+#include <Wire.h>
+#include <SparkFun_u-blox_GNSS_Arduino_Library.h>
 
-#include <SparkFun_u-blox_GNSS_Arduino_Library.h> //Click here to get the library: http://librarymanager/All#SparkFun_u-blox_GNSS
 SFE_UBLOX_GNSS myGNSS;
 
 void setup()
 {
   Serial.begin(115200);
-  Serial.println("SparkFun u-blox Example");
 
   Wire.begin();
 
@@ -40,5 +39,5 @@ void loop()
   Serial.print(groundSpeed, 3);
   Serial.println(F(" m/s"));
 
-  delay(100); //Don't pound too hard on the I2C bus
+  delay(100);
 }
