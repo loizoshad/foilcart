@@ -135,7 +135,7 @@ class DynamicModel:
         self.h12 = M_tot[2]/Izz      #  x(11): wz ang. vel. [rad/s]
 
 
-    def compute_jacobian(self):
+    def compute_dynamics_jacobian(self):
         # Symbollically evaluate the jacobiann for the nonlinear model
         self.h = ca.vertcat(self.h1, self.h2, self.h3, self.h4, self.h5, self.h6, self.h7, self.h8, self.h9, self.h10, self.h11, self.h12)
         self.var = ca.vertcat(self.x, self.u)
@@ -160,6 +160,9 @@ class DynamicModel:
 
         return A, B
       
+
+
+
 
 def convert_alias(s):
     '''
@@ -186,7 +189,6 @@ def convert_alias(s):
         final = '1.0'
             
     return final
-
 
 
 def add_decimal_points(s):

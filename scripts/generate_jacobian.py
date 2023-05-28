@@ -77,8 +77,8 @@ import casadi.tools as ct
 
 def main():
     dynamic_model = DynamicModel()
-    # functions = dynamic_model.compute_jacobian()
-    A, B = dynamic_model.compute_jacobian()
+    # functions = dynamic_model.compute_dynamics_jacobian()
+    A, B = dynamic_model.compute_dynamics_jacobian()
 
     ns = dynamic_model.NS   # Number of states
     nc = dynamic_model.NC   # Number of controls

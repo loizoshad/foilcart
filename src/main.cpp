@@ -3,10 +3,15 @@
 #include <iostream>
 
 #include "SensorFusion.h"     // Mahony filter
-// #include "can_comm.h"         // CAN communication
+#include "can_comm.h"         // CAN communication
 #include <Wire.h>
 #include <SparkFun_u-blox_GNSS_Arduino_Library.h>
 
+// CAN bus
+std::vector<float> state_CAN(NS, 0.0);  // This vector will be used to send the estimated state by the EKF on the CAN bus
+
+
+float state_CAN[NS] = {0.0};  // This array will be used to send the estimated state by the EKF on the CAN bus
 
 // EKF
 KalmanFilter kf;              // EKF object
@@ -220,7 +225,8 @@ void setup()
   Serial.begin(115200);   // Serial port for debugging
   Serial1.begin(921600);  // Serial port for IMU
   initGNSS();            // Setup GNSS
-  // init_can();             // Setup CAN    // From the can_comm.h library
+  init_can();             // Setup CAN    // From the can_comm.h library
+
 
   u <<    113.1111,   // m1 [N]
           113.1111,   // m2 [N]
@@ -245,7 +251,7 @@ void setup()
 
 void loop()
 {
-  // read_can(fore_alt, aft_alt, wing_angle, rudder_angle, elevator_angle, throttle);
+  read_can(fore_alt, aft_alt, wing_angle, rudder_angle, elevator_angle, throttle);
 
   readSensors();
 
@@ -264,6 +270,13 @@ void loop()
 
   print_state(x);
 
+  // Update the entries of the std::vector state_CAN by the entries of the state vector Eigen::MatrixXf x
+  for (int i = 0; i < 12; i++)
+  {
+    state_CAN[i] = x(i, 0);
+  }
+
+  
 
 }
 

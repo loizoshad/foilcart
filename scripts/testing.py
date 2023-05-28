@@ -82,7 +82,7 @@ import casadi.tools as ct
 
 def main():
     dynamic_model = DynamicModel()
-    functions = dynamic_model.compute_jacobian()
+    functions = dynamic_model.compute_dynamics_jacobian()
 
     for i in range(0, len(functions)):
         print(f'f[{i}] = {functions[i]}')
