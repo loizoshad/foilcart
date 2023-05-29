@@ -1,0 +1,36 @@
+Example:
+
+- EKF estimated state that was sent on the CAN bus
+
+| x = 0.14 | y = 0.00 | z = -0.50 | phi = -0.00 | theta = 0.01 | psi = 0.01 | vx = 0.38 | vy = 0.00 | vz = -0.00 | wx = -0.00 | wy = 0.00 | wz = 0.00 | 
+  
+
+
+- The following table contains the decoded value as received by a NVIDIA JETSON AGX XAVIER connected on the CAN bus
+    - MESSAGE   : The ID of the received message
+    - HEX       : Hexadecimal representation of the received message (this is the initial form of the received message)
+    - DECIMAL   : HEX value converted to decimal from 2s complement
+    - FINAL(/..): We divide the DECIMAL by 1000000 to get the original floating point value.
+    - Value Sent: This is actually not on the JETSON side, is just added to compare these values (the actual sent values) with the decoded ones.
+
+ 
+MESSAGE |     HEX       |DECIMAL (2s compl.)|FINAL(/1000000)| Value Sent        |
+        |               |                   |               |                   |
+200 H   | 00 00 EA 0F   |   59919           |   0.059919    |   x     = 0.06    |
+200 L   | 00 00 00 01   |   1               |   0.0         |   vx    = 0.00    |
+        |               |                   |               |                   |
+201 H   | 00 00 00 0B   |   11              |   0.0         |   y     = 0.00    |
+201 L   | 00 00 01 08   |   264             |   0.0         |   vy    = 0.00    |
+        |               |                   |               |                   |
+202 H   | FF F8 5E E0   |   -500000         |   -0.5        |   z     = -0.50   |
+202 L   | FF FF FF BA   |   -70             |   -0.0        |   vz    = -0.00   |
+        |               |                   |               |
+203 H   | FF FF F5 F4   |   -2572           |   -0.0        |   phi   = -0.00   |
+203 L   | FF FF F9 50   |   -1712           |   -0.0        |   wx    = -0.00   |
+        |               |                   |               |
+204 H   | 00 00 3C 23   |   15395           |   0.015       |   theta = 0.02    |
+204 L   | 00 00 05 B1   |   1457            |   0.0001      |   wy    = 0.00    |
+        |               |                   |               |                   |
+205 H   | 00 00 DC BA   |   56506           |   0.056       |   psi   = 0.06    | 
+205 L   | FF FF FD 1E   |   -738            |   -0.0        |   WZ    = -0.00   |
+

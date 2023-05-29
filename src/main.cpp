@@ -10,9 +10,6 @@
 // CAN bus
 std::vector<float> state_CAN(NS, 0.0);  // This vector will be used to send the estimated state by the EKF on the CAN bus
 
-
-float state_CAN[NS] = {0.0};  // This array will be used to send the estimated state by the EKF on the CAN bus
-
 // EKF
 KalmanFilter kf;              // EKF object
 Eigen::MatrixXf x(NS, 1);     // State vector
@@ -276,6 +273,8 @@ void loop()
     state_CAN[i] = x(i, 0);
   }
 
+  // Send the state vector to the CAN bus
+  write_can(state_CAN);
   
 
 }
