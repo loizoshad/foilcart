@@ -169,12 +169,6 @@ class DynamicModel:
         return A, B
       
 
-    def compute_measurement_jacobian(self):
-        self.g = ca.vertcat(self.g1, self.g2, self.g3, self.g4, self.g4, self.g5)
-
-
-
-
 def convert_alias(s):
     '''
     '''

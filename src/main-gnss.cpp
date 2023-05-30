@@ -20,9 +20,7 @@ void setup()
 }
 
 void loop()
-{
-  // myGNSS.checkUblox(); //See if new data is available. Process bytes as they come in.
-  
+{  
   long latitude = myGNSS.getLatitude();                               // Lattitude in degrees decimal * 10^-7
   float latitudeDegrees = static_cast<float>(latitude) / 10000000.0;  // Convert to degrees
   Serial.print(F("Latitude: "));

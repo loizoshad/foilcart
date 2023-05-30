@@ -96,9 +96,6 @@ Eigen::MatrixXf KalmanFilter::llt_inverse(Eigen::MatrixXf A)
 
 }
 
-
-
-
 Eigen::MatrixXf KalmanFilter::update(Eigen::MatrixXf u, Eigen::MatrixXf z)
 {
     // Convert Eigen::MatrixXf to std::vector<float> x_

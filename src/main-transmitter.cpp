@@ -5,8 +5,6 @@
 Upload this code to test if the board can transmit messages from CAN bus
 */
 
-// Transmitter
-
 
 FlexCAN_T4<CAN1, RX_SIZE_256, TX_SIZE_16> myCan1;
 

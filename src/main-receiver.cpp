@@ -6,9 +6,6 @@ Upload this code to test if the board can receive messages from CAN bus
 */
 
 
-// Receiver
-// Receives the message from CAN bus and sends back an ACK message
-
 FlexCAN_T4<CAN1, RX_SIZE_256, TX_SIZE_16> myCan1;
 
 static CAN_message_t msg03;       // Received message 

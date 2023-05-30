@@ -19,7 +19,7 @@
 // Number of states
 #define NS 12   // Number of states
 #define NC 5    // Number of control inputs
-#define NM 10    // Number of measurements // TODO: Check this
+#define NM 10   // Number of measurements // TODO: Check this
 
 class KalmanFilter
 {
@@ -40,11 +40,6 @@ class KalmanFilter
         Eigen::MatrixXf C;      // Measurement matrix
         Eigen::MatrixXf C_T;    // Transpose of measurement matrix
         
-        Eigen::MatrixXf inv_hold;
-
-        Eigen::MatrixXf I_10 = Eigen::MatrixXf::Identity(10, 10);  // Identity matrix
-
-
         Eigen::MatrixXf I_ns = Eigen::MatrixXf::Identity(NS, NS);   // Identity matrix used in the Kalman filter update
         Eigen::MatrixXf Qn = Eigen::MatrixXf::Identity(NS, NS);     // Process noise covariance
         Eigen::MatrixXf Rn = Eigen::MatrixXf::Identity(NM, NM);     // Measurement noise covariance
