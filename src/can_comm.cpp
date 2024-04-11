@@ -109,7 +109,6 @@ void init_can()
 
 }
 
-
 void write_can(std::vector<float> state_CAN)
 {
 
@@ -202,7 +201,6 @@ void write_can(std::vector<float> state_CAN)
     Can1.write(msg205);
 
 }
-
     
 void read_can( float* fore_alt, float* aft_alt, float* wing_angle, float* rudder_angle, float* elevator_angle, float* throttle)
 {                  
@@ -215,8 +213,8 @@ void read_can( float* fore_alt, float* aft_alt, float* wing_angle, float* rudder
         case 0x120: // Fore Senix sensor altitude
         {
             // TODO Implement the correct conversion
-            int16_t fore_alt_int = (int16_t) (inMsg.buf[0] << 8 | inMsg.buf[1]);
-            *fore_alt = (float) fore_alt_int;
+            // int16_t fore_alt_int = (int16_t) (inMsg.buf[0] << 8 | inMsg.buf[1]);
+            // *fore_alt = (float) fore_alt_int;
 
             // for (int i = 0; i < inMsg.len; i++)
             // {
@@ -230,8 +228,8 @@ void read_can( float* fore_alt, float* aft_alt, float* wing_angle, float* rudder
         case 0x121: // Aft Senix sensor altitude
         {
             // TODO: Implement the correct conversion
-            int16_t aft_alt_int = (int16_t) (inMsg.buf[0] << 8 | inMsg.buf[1]);
-            *aft_alt = (float) aft_alt_int;
+            // int16_t aft_alt_int = (int16_t) (inMsg.buf[0] << 8 | inMsg.buf[1]);
+            // *aft_alt = (float) aft_alt_int;
 
             // for (int i = 0; i < inMsg.len; i++)
             // {

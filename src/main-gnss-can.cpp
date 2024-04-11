@@ -84,8 +84,8 @@ void loop()
   read_can();
   write_can();
 
-  long ground_speed = myGNSS.getGroundSpeed(); // Ground speed in mm/s
-  float groundSpeed = static_cast<float>(ground_speed) / 1000.0; // Convert to m/s
+  long ground_speed = myGNSS.getGroundSpeed();                    // Ground speed in mm/s
+  float groundSpeed = static_cast<float>(ground_speed) / 1000.0;  // Convert to m/s
   Serial.print(F(" Ground Speed: "));
   Serial.print(groundSpeed, 3);
   Serial.println(F(" m/s"));

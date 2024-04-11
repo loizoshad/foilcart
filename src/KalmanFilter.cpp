@@ -107,14 +107,14 @@ Eigen::MatrixXf KalmanFilter::update(Eigen::MatrixXf u, Eigen::MatrixXf z)
     A = c2d_A(get_A(x_, u_));
     B = c2d_B(get_B(x_, u_));
     
-    Eigen::MatrixXf x_hat = A*x + B*u;                          // Predict (a priori) state estimate: x_hat = A*x + B*u
-    Eigen::MatrixXf P_hat = A*P*A.transpose() + Qn;          // Predict (a priori) covariance estimate: P_hat = A*P*A^T + Qn    
-    Eigen::MatrixXf y = z - C*x_hat;                            // Innovation y_k = z_k - C*x_hat
-    Eigen::MatrixXf S = C*P_hat*C_T + Rn;          // Inovation covariance S_k = C*P_hat*C^T + Rn
+    Eigen::MatrixXf x_hat = A*x + B*u;                  // Predict (a priori) state estimate: x_hat = A*x + B*u
+    Eigen::MatrixXf P_hat = A*P*A.transpose() + Qn;     // Predict (a priori) covariance estimate: P_hat = A*P*A^T + Qn    
+    Eigen::MatrixXf y = z - C*x_hat;                    // Innovation y_k = z_k - C*x_hat
+    Eigen::MatrixXf S = C*P_hat*C_T + Rn;               // Inovation covariance S_k = C*P_hat*C^T + Rn
 
-    Eigen::MatrixXf K = P_hat*C_T*llt_inverse(S);     // Kalman gain K_k = P_hat*C^T*S_k^-1
-    Eigen::MatrixXf x_hat_new = x_hat + K*y;                    // Update (a posteriori) state estimate: x_hat_new = x_hat + K_k*y_k
-    Eigen::MatrixXf P_new = (I_ns - K*C)*P_hat; // Update (a posteriori) covariance estimate: P_new = (I - K_k*C)*P_hat
+    Eigen::MatrixXf K = P_hat*C_T*llt_inverse(S);       // Kalman gain K_k = P_hat*C^T*S_k^-1
+    Eigen::MatrixXf x_hat_new = x_hat + K*y;            // Update (a posteriori) state estimate: x_hat_new = x_hat + K_k*y_k
+    Eigen::MatrixXf P_new = (I_ns - K*C)*P_hat;         // Update (a posteriori) covariance estimate: P_new = (I - K_k*C)*P_hat
 
     // Update the state and covariance
     x = x_hat_new;

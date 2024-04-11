@@ -1,3 +1,7 @@
+# Description
+
+This repository contains the implementation of an Extended Kalman Filter (EKF) for a hydrofoiling boat, as well as the communication between all the embedded systems in the boat. This has been developed as part of the FoilCart project at KTH Royal Institute of Technology.
+ 
 # Run
 
 In order to upload either a unit test or the main file on the Teensy 4.1 run the following command, where <env> denotes the name of the environment (You can find the list of environments in the platformio.ini file)

@@ -8,7 +8,7 @@ Upload this code to test if the board can receive messages from CAN bus
 
 FlexCAN_T4<CAN1, RX_SIZE_256, TX_SIZE_16> myCan1;
 
-static CAN_message_t msg03;       // Received message 
+static CAN_message_t msg03;   // Received message 
 static CAN_message_t msg50;   // Acknowledgement message
 
 
